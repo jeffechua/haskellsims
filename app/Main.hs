@@ -18,7 +18,7 @@ colorize (World psi _) = Repa.map (\x -> if x > 0 then rgb (x/10) 0 0 else rgb 0
 psi0 :: Array U DIM2 Float
 psi0 = computeS $ fromFunction (Z :. 50 :. 50) (const 0)
 v0 :: Array U DIM2 Float
-v0 = computeS $ fromFunction (Z :. 50 :. 50) (\(Z :. x :. y) ->  if (x,y) == (20,20) then 1 else 0)
+v0 = computeS $ fromFunction (Z :. 50 :. 50) (\(Z :. x :. y) ->  if (x,y)==(25,25) then 100 else 0)
 
 framerate :: Int
 framerate = 30
@@ -33,8 +33,8 @@ world0 = World psi0 v0
 waveSim :: Float -> World -> World
 waveSim t (World oldPsi oldV) = World newPsi newV
     where
-        newPsi = computeS $ oldPsi +^ Repa.map (*interval) oldV
         newV   = computeS $ oldV   +^ Repa.map (*(interval*c2)) (laplace oldPsi)
+        newPsi = computeS $ oldPsi +^ Repa.map (*interval) newV
 
 main :: IO ()
 main = playArray disp (5,5) framerate world0 colorize (\event world -> world) waveSim
